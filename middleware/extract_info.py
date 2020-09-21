@@ -5,9 +5,14 @@ from google.cloud import speech_v1p1beta1
 from google.cloud.speech_v1p1beta1 import enums
 from mutagen.mp3 import MP3
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 import os
 import io
+
+from middleware import upload_to_s3
 
 def extract_speed(file_path):
     audio = MP3(file_path)
@@ -61,12 +66,25 @@ def extract_pitch_and_db(sound):
     # ap = pw.d4c(data, f0, _time, fs)  # 非周期性指標の抽出
 
     res = {}
-    res['amplitude'] = amplitude.tolist()[:1000]
+    # res['amplitude'] = amplitude.tolist()
     res['db'] = db
     res['db_max'] = db_max
     res['f0'] = f0.tolist()
     # res['sp'] = sp.tolist()
     # res['ap'] = ap.tolist()
+
+    # plot image using matplotlib and upload to s3
+    fig = plt.figure()
+    plt.plot(amplitude, linewidth=3, color="blue", label="amplitude")
+    plt.legend(fontsize=10)
+    fig.savefig("./images/amplitude.png")
+    upload_to_s3.upload_image('amplitude.png', './images/amplitude.png')
+
+    fig = plt.figure()
+    plt.plot(f0, linewidth=3, color="green", label="pitch")
+    plt.legend(fontsize=10)
+    fig.savefig("./images/f0.png")
+    upload_to_s3.upload_image('f0.png', './images/f0.png')
 
     return res
 
