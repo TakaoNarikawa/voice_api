@@ -1,6 +1,7 @@
 # Set Up
 ## 1.
-Add to credential json file to credentials folder
+Add credential json file to credentials folder
+And add aws.config file to config folder
 
 ## 2. 
 Environment construction and server startup
